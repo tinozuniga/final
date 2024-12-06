@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import streamlit as st
 from wordcloud import WordCloud
 
+# Configurar el backend de Matplotlib para Streamlit
+import matplotlib
+matplotlib.use("Agg")
+
 # Iniciar la aplicación
 st.title("Análisis de Datos sobre Redes Sociales y Tecnología")
 st.write("Este blog interactivo analiza el impacto de las redes sociales y el uso de tecnología en la salud mental.")
@@ -122,4 +126,36 @@ st.pyplot(plt)
 average_time_spent_per_platform = time_wasters_df.groupby('Platform')['Total Time Spent'].mean()
 plt.figure(figsize=(12, 6))
 average_time_spent_per_platform.sort_values(ascending=False).plot(kind='bar', color='skyblue', edgecolor='black', alpha=0.7)
-plt
+plt.ylim(140, 160)
+plt.xlabel('Plataforma')
+plt.ylabel('Tiempo Promedio Total Gastado (Minutos)')
+plt.title('Tiempo Promedio Total Gastado por Plataforma (140-160 minutos)')
+plt.xticks(rotation=45)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+st.pyplot(plt)
+
+# Mapa: Frecuencia de Usuarios por País
+st.write("Mapa interactivo de ubicación de usuarios:")
+location_counts = time_wasters_df['Location'].value_counts()
+location_coordinates = {
+    "United States": [37.0902, -95.7129],
+    "India": [20.5937, 78.9629],
+    "Brazil": [-14.2350, -51.9253],
+    "Germany": [51.1657, 10.4515],
+    "Japan": [36.2048, 138.2529],
+    "Canada": [56.1304, -106.3468],
+    "Australia": [-25.2744, 133.7751],
+    "Vietnam": [21.0285, 105.8542],
+    "Philippines": [14.5995, 120.9842],
+    "Indonesia": [-6.2088, 106.8456],
+    "Pakistan": [33.6844, 73.0479],
+    "Mexico": [19.4326, -99.1332],
+}
+base_map = folium.Map(location=[0, 0], zoom_start=2)
+for location, count in location_counts.items():
+    if location in location_coordinates:
+        folium.Marker(
+            location=location_coordinates[location],
+            popup=f"{location}: {count} usuarios"
+        ).add_to(base_map)
+st.components.v1.html(base_map._repr_html_(), height=500)
