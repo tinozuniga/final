@@ -76,7 +76,7 @@ if not mental_health_filtered.empty:
     st.plotly_chart(bubble_chart)
 
     # Gráfico de barras: Promedio de sueño por estado mental
-    st.write("Ya, ahora veamos cómo cambian las horas de sueño según el estado de salud mental. ¿Qué crees que pasa?")
+    st.write("Podemos observar cierta relación entre los rangos de edad y las variables tiempo de sueño vs horas en pantalla y salud mental. Pero, ahora veamos cómo cambian las horas de sueño según el estado de salud mental. ¿Qué crees que pasa?")
     bar_chart = px.bar(
         mental_health_filtered.groupby("Mental_Health_Status")["Sleep_Hours"].mean().reset_index(),
         x="Mental_Health_Status",  # Cada barra representa un estado mental
@@ -85,6 +85,7 @@ if not mental_health_filtered.empty:
         title="Horas promedio de sueño por estado de salud mental"
     )
     st.plotly_chart(bar_chart)
+    st.write("Curiosamente, todas las personas, sin importar su salud mental duermen entre 6 y 7 horas... Dejemos los estereotipos a un lado y veamos más estadísticas! ")
 else:
     st.warning("Ups, no hay datos para el rango seleccionado. Prueba con otro rango, po. Quizás algo más amplio.")
 
