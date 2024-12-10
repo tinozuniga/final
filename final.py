@@ -76,7 +76,20 @@ if not mental_health_filtered.empty:
     #### ¿Qué buscamos responder?:
     ¿cómo afectan las horas frente a la pantalla nuestro sueño y estrés? Mira, este gráfico te muestra los patrones según el rango de edad que seleccionaste.
     """)
+# Bubble Chart: Relación entre horas de pantalla, sueño y estrés
+    bubble_chart = px.scatter(
+        mental_health_filtered,
+        x="Screen_Time_Hours",  # Horas frente a la pantalla
+        y="Sleep_Hours",  # Horas de sueño
+        size="Stress_Level",  # El tamaño de las burbujas representa el estrés
+        color="Mental_Health_Status",  # Los colores indican el estado de salud mental
+        hover_name="Mental_Health_Status",  # Esto aparece al pasar el mouse por encima xd
+        title="Relación entre tiempo de pantalla, sueño y estrés"
+    )
+    st.plotly_chart(bubble_chart)
+    # Aquí va el primer gráfico: burbujas bonitas que nos dicen si pasar muchas horas pegados a la pantalla está haciendo que durmamos menos o que el estrés se nos vaya por las nubes.
 
+    st.write("Ya, ahora veamos cómo cambian las horas de sueño según el estado de salud mental. ¿Qué crees que pasa?")
 
     
     # Bar Chart: Promedio de sueño por estado mental
@@ -93,6 +106,8 @@ if not mental_health_filtered.empty:
 else:
     st.warning("Ups, no hay datos para el rango seleccionado. Prueba con otro rango, po. Quizás algo más amplio.")
     # Mensaje de advertencia amigable para que el usuario no se pierda si no encuentra datos.
+
+
 
 ### 2. USO DE REDES SOCIALES ###
 st.subheader("2. Análisis de las plataformas más populares")
