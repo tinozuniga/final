@@ -170,6 +170,7 @@ sunburst_chart = px.sunburst(
 st.plotly_chart(sunburst_chart)
 
 
+
 # Gráfico de barras: Tiempo promedio perdido por plataforma
 platform_time = time_wasters_df.groupby("Platform")["Total Time Spent"].mean()
 
