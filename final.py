@@ -1,161 +1,205 @@
-# Importar librerías necesarias
+# Importar las librerías necesarias
 import pandas as pd
 import folium
 import matplotlib.pyplot as plt
 import streamlit as st
 from wordcloud import WordCloud
+import plotly.express as px
 
-# Configurar el backend de Matplotlib para Streamlit
+# Configurar Matplotlib para que funcione bien con Streamlit
 import matplotlib
 matplotlib.use("Agg")
 
-# Iniciar la aplicación
-st.title("Análisis de Datos sobre Redes Sociales y Tecnología")
-st.write("Este blog interactivo analiza el impacto de las redes sociales y el uso de tecnología en la salud mental.")
+# Título llamativo con contexto inicial
+st.title("🌐 Redes Sociales y Salud Mental: Un Análisis Interactivo 🧠")
+st.write("""
+Las redes sociales han revolucionado la forma en que nos conectamos con el mundo. Pero detrás de cada scroll infinito y cada like, surge una pregunta importante: ¿a qué precio?
+En este blog interactivo, analizaremos el impacto del tiempo en línea en nuestra salud mental: desde las horas de sueño hasta los niveles de estrés y la productividad.
+Acompáñanos a descubrir patrones, explorar datos y reflexionar sobre cómo equilibrar nuestra vida digital con nuestro bienestar. ¡Es hora de cuestionarnos nuestro tiempo en línea!
+""")
 
-# Archivos CSV (deben estar en la misma carpeta que el script)
+# 🚀 Cargando las bases de datos
 mental_health_file = "mental_health_and_technology_usage_2024.csv"
 social_media_file = "social_media_usage.csv"
 time_wasters_file = "Time-Wasters on Social Media.csv"
 
-# Cargar las bases de datos
 mental_health_df = pd.read_csv(mental_health_file)
 social_media_df = pd.read_csv(social_media_file)
 time_wasters_df = pd.read_csv(time_wasters_file)
 
-# 1. Primera Base de Datos: Salud Mental y Tecnología
-st.subheader("1. Análisis de Salud Mental y Tecnología")
+### Limpieza de datos ###
+# Convertir columnas clave a numérico para evitar problemas
+for col in ['Age', 'Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level']:
+    mental_health_df[col] = pd.to_numeric(mental_health_df[col], errors='coerce')
 
-# Filtrar edades entre 18 y 26 años
-mental_health_filtered = mental_health_df[(mental_health_df['Age'] >= 18) & (mental_health_df['Age'] <= 26)]
+# Limpiar filas con valores nulos
+mental_health_df = mental_health_df.dropna(subset=['Age', 'Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level'])
 
-# Gráfica 1: Promedio de Uso de Redes Sociales por Edad
-average_usage_by_age = mental_health_filtered.groupby('Age')['Social_Media_Usage_Hours'].mean()
-plt.figure()
-plt.plot(average_usage_by_age.index, average_usage_by_age.values, marker='o', linestyle='-')
-plt.xlabel('Edad (Años)')
-plt.ylabel('Promedio de Horas de Uso de Redes Sociales')
-plt.title('Promedio de Uso de Redes Sociales por Edad')
-plt.grid(True)
-st.pyplot(plt)
+# Filtrar datos razonables (18-60 años)
+mental_health_df = mental_health_df[(mental_health_df['Age'] >= 18) & (mental_health_df['Age'] <= 60)]
 
-# Gráfica 2: Horas Promedio de Uso de Redes Sociales por Estado de Salud Mental
-average_usage_by_health_status = mental_health_filtered.groupby('Mental_Health_Status')['Social_Media_Usage_Hours'].mean()
-plt.figure()
-average_usage_by_health_status.plot(kind='barh', color='brown')
-plt.xlabel('Promedio de Horas de Uso de Redes Sociales')
-plt.ylabel('Estado de Salud Mental')
-plt.title('Horas Promedio de Uso de Redes Sociales por Estado de Salud Mental')
-plt.grid(axis='x', linestyle='--', alpha=0.7)
-st.pyplot(plt)
+# Diagnóstico inicial (no se muestra en el blog, solo para verificar internamente)
+diagnostic = mental_health_df.describe()
 
-# Gráfica 3: Promedio de Horas de Sueño por Intervalo de Tiempo en Pantalla
-bins = [0, 2, 4, 6, 8, 10, 12, 14, 16]
-labels = [f'{bins[i]}-{bins[i+1]}' for i in range(len(bins) - 1)]
-mental_health_filtered['Screen_Time_Range'] = pd.cut(mental_health_filtered['Screen_Time_Hours'], bins=bins, labels=labels, include_lowest=True)
-average_sleep_by_screen_time = mental_health_filtered.groupby('Screen_Time_Range')['Sleep_Hours'].mean()
-plt.figure()
-average_sleep_by_screen_time.plot(kind='bar', color='purple', edgecolor='green', alpha=0.5)
-plt.xlabel('Intervalo de Horas de Tiempo en Pantalla')
-plt.ylabel('Promedio de Horas de Sueño')
-plt.title('Promedio de Horas de Sueño por Intervalo de Tiempo en Pantalla')
-plt.grid(axis='y', linestyle='--', alpha=1)
-plt.xticks(rotation=45)
-st.pyplot(plt)
+### 1. SALUD MENTAL Y TECNOLOGÍA ###
+st.subheader("1. Explorando la relación entre salud mental y tecnología")
 
-# 2. Segunda Base de Datos: Uso de Redes Sociales
-st.subheader("2. Análisis de Uso de Redes Sociales")
+# Rango de edad interactivo
+age_range = st.slider("Selecciona el rango de edad:", 18, 60, (18, 26))
+mental_health_filtered = mental_health_df[
+    (mental_health_df['Age'] >= age_range[0]) & (mental_health_df['Age'] <= age_range[1])
+]
 
-# Gráfica 1: WordCloud de Aplicaciones Más Usadas
-text_apps = " ".join(social_media_df['App'].dropna())
-wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text_apps)
-plt.figure(figsize=(10, 5))
-plt.imshow(wordcloud, interpolation='bilinear')
-plt.axis('off')
-plt.title('WordCloud de Aplicaciones Más Usadas', fontsize=16)
-st.pyplot(plt)
+if not mental_health_filtered.empty:
+    st.write("""
+    #### ¿Qué buscamos responder?
+    ¿Cómo afectan las horas frente a la pantalla nuestro sueño y estrés? Este gráfico muestra patrones según el rango de edad seleccionado.
+    """)
 
-# Gráfica 2: Frecuencia de Uso por Aplicación
-app_frequencies = social_media_df['App'].value_counts()
-plt.figure(figsize=(12, 6))
-app_frequencies.plot(kind='bar', color='skyblue', edgecolor='black', alpha=0.7)
-plt.xlabel('Aplicación')
-plt.ylabel('Frecuencia')
-plt.title('Frecuencia de Uso por Aplicación')
-plt.xticks(rotation=45)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(plt)
+    # Bubble Chart: Relación entre horas de pantalla, sueño y estrés
+    bubble_chart = px.scatter(
+        mental_health_filtered,
+        x="Screen_Time_Hours",
+        y="Sleep_Hours",
+        size="Stress_Level",
+        color="Mental_Health_Status",
+        hover_name="Mental_Health_Status",
+        title="Relación entre tiempo de pantalla, sueño y estrés"
+    )
+    st.plotly_chart(bubble_chart)
 
-# Gráfica 3: Promedio de Horas Diarias Gastadas por Aplicación
-average_hours_per_app = social_media_df.groupby('App')['Daily_Minutes_Spent'].mean() / 60
-plt.figure(figsize=(12, 6))
-average_hours_per_app.sort_values(ascending=False).plot(kind='bar', color='skyblue', edgecolor='black', alpha=0.7)
-plt.ylim(3.5, 4.5)
-plt.xlabel('Aplicación')
-plt.ylabel('Promedio de Horas Diarias')
-plt.title('Promedio de Horas Diarias Gastadas por Aplicación (Rango 3:30 a 4:30 horas)')
-plt.xticks(rotation=45)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(plt)
+    st.write("Analicemos cómo el sueño varía según el estado de salud mental.")
+    # Bar Chart: Promedio de sueño por estado mental
+    bar_chart = px.bar(
+        mental_health_filtered.groupby("Mental_Health_Status")["Sleep_Hours"].mean().reset_index(),
+        x="Mental_Health_Status",
+        y="Sleep_Hours",
+        color="Mental_Health_Status",
+        title="Horas promedio de sueño por estado de salud mental"
+    )
+    st.plotly_chart(bar_chart)
 
-# Gráfica 4: Promedio de Likes Diarios por Aplicación
-average_likes_per_app = social_media_df.groupby('App')['Likes_Per_Day'].mean()
-plt.figure(figsize=(12, 6))
-average_likes_per_app.sort_values(ascending=False).plot(kind='bar', color='skyblue', edgecolor='black', alpha=0.7)
-plt.xlabel('Aplicación')
-plt.ylabel('Promedio de Likes Diarios')
-plt.title('Promedio de Likes Diarios por Aplicación')
-plt.xticks(rotation=45)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(plt)
+else:
+    st.warning("No se encontraron datos para el rango seleccionado. Prueba otro rango.")
 
-# 3. Tercera Base de Datos: Tiempo Desperdiciado en Redes Sociales
-st.subheader("3. Análisis de Plataformas que Desperdician Tiempo")
+### 2. USO DE REDES SOCIALES ###
+st.subheader("2. Análisis de las plataformas más populares")
 
-# Gráfica 1: Nivel Promedio de Adicción por Plataforma
-average_addiction_per_platform = time_wasters_df.groupby('Platform')['Addiction Level'].mean()
-plt.figure(figsize=(12, 6))
-average_addiction_per_platform.sort_values(ascending=False).plot(kind='barh', color='green', edgecolor='black', alpha=0.7)
-plt.ylabel('Plataforma')
-plt.xlabel('Nivel Promedio de Adicción')
-plt.title('Nivel Promedio de Adicción por Plataforma')
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(plt)
+# Selector interactivo para elegir análisis
+social_analysis_type = st.selectbox(
+    "Selecciona el análisis que deseas realizar:",
+    ["Aplicaciones más usadas", "Frecuencia por aplicación", "Likes promedio por aplicación", "Distribución de likes"]
+)
 
-# Gráfica 2: Tiempo Promedio Total Gastado por Plataforma
-average_time_spent_per_platform = time_wasters_df.groupby('Platform')['Total Time Spent'].mean()
-plt.figure(figsize=(12, 6))
-average_time_spent_per_platform.sort_values(ascending=False).plot(kind='bar', color='skyblue', edgecolor='black', alpha=0.7)
-plt.ylim(140, 160)
-plt.xlabel('Plataforma')
-plt.ylabel('Tiempo Promedio Total Gastado (Minutos)')
-plt.title('Tiempo Promedio Total Gastado por Plataforma (140-160 minutos)')
-plt.xticks(rotation=45)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(plt)
+if social_analysis_type == "Aplicaciones más usadas":
+    st.write("Visualizando las aplicaciones más populares con una nube de palabras.")
+    text_apps = " ".join(social_media_df['App'].dropna())
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text_apps)
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    st.pyplot(plt)
 
-# Mapa: Frecuencia de Usuarios por País
-st.write("Mapa interactivo de ubicación de usuarios:")
-location_counts = time_wasters_df['Location'].value_counts()
-location_coordinates = {
-    "United States": [37.0902, -95.7129],
-    "India": [20.5937, 78.9629],
-    "Brazil": [-14.2350, -51.9253],
-    "Germany": [51.1657, 10.4515],
-    "Japan": [36.2048, 138.2529],
-    "Canada": [56.1304, -106.3468],
-    "Australia": [-25.2744, 133.7751],
-    "Vietnam": [21.0285, 105.8542],
-    "Philippines": [14.5995, 120.9842],
-    "Indonesia": [-6.2088, 106.8456],
-    "Pakistan": [33.6844, 73.0479],
-    "Mexico": [19.4326, -99.1332],
-}
-base_map = folium.Map(location=[0, 0], zoom_start=2)
-for location, count in location_counts.items():
-    if location in location_coordinates:
-        folium.Marker(
-            location=location_coordinates[location],
-            popup=f"{location}: {count} usuarios"
-        ).add_to(base_map)
-st.components.v1.html(base_map._repr_html_(), height=500)
+elif social_analysis_type == "Frecuencia por aplicación":
+    st.write("Descubre qué aplicaciones son las más usadas.")
+    app_frequencies = social_media_df['App'].value_counts()
+    horizontal_bar_chart = px.bar(
+        app_frequencies,
+        orientation="h",  # Horizontal Bar Chart
+        title="Frecuencia de uso por aplicación",
+        labels={"value": "Frecuencia", "index": "Aplicación"}
+    )
+    st.plotly_chart(horizontal_bar_chart)
+
+elif social_analysis_type == "Likes promedio por aplicación":
+    st.write("¿Qué aplicaciones generan más likes? Aquí está la respuesta.")
+    likes_by_app = social_media_df.groupby("App")["Likes_Per_Day"].mean().sort_values(ascending=False)
+    bar_chart = px.bar(
+        likes_by_app,
+        title="Likes promedio por aplicación",
+        labels={"value": "Likes Promedio", "index": "Aplicación"}
+    )
+    st.plotly_chart(bar_chart)
+
+elif social_analysis_type == "Distribución de likes":
+    st.write("Analizamos cómo se distribuyen los likes por día.")
+    distplot = px.histogram(
+        social_media_df,
+        x="Likes_Per_Day",
+        nbins=30,
+        title="Distribución de likes diarios",
+        labels={"Likes_Per_Day": "Likes por día"}
+    )
+    
+    # Agregar borde a las barras del histograma
+    distplot.update_traces(
+        marker_line_width=1.5,  # Grosor del borde
+        marker_line_color="black"  # Color del borde
+    )
+    
+    st.plotly_chart(distplot)
+
+
+### 3. TIEMPO DESPERDICIADO EN REDES SOCIALES ###
+st.subheader("3. Plataformas y productividad")
+
+st.write("""
+#### Reflexión
+¿Cuáles son las plataformas donde más tiempo gastamos? Este análisis busca responder cómo eso impacta nuestra productividad.
+""")
+
+# Sunburst Chart: Adicción según plataforma y tipo de dispositivo
+st.write("Exploremos la adicción según plataforma y dispositivo.")
+sunburst_chart = px.sunburst(
+    time_wasters_df,
+    path=["Platform", "DeviceType"],
+    values="Addiction Level",
+    color="Addiction Level",
+    title="Adicción por plataforma y tipo de dispositivo"
+)
+st.plotly_chart(sunburst_chart)
+
+# Gráfico de barras: Tiempo promedio perdido por plataforma
+platform_time = time_wasters_df.groupby("Platform")["Total Time Spent"].mean()
+
+# Crear gráfico de barras con bordes y diseño atractivo
+bar_chart = px.bar(
+    platform_time,
+    title="Tiempo promedio perdido por plataforma",
+    labels={"value": "Tiempo Promedio (minutos)", "index": "Plataforma"},
+    text=platform_time.round(2)  # Mostrar valores sobre las barras
+)
+
+# Personalización del gráfico
+bar_chart.update_traces(
+    marker_line_width=1.5,  # Grosor del borde
+    marker_line_color="black",  # Color del borde
+    textposition='outside'  # Ubicación de las etiquetas
+)
+
+bar_chart.update_layout(
+    xaxis_title="Plataforma",
+    yaxis_title="Tiempo Promedio (minutos)",
+    title_x=0.5  # Centrar el título
+)
+
+# Mostrar gráfico en Streamlit
+st.plotly_chart(bar_chart)
+st.write("""
+En esta gráfica se analiza el tiempo promedio que los usuarios dedican a diferentes plataformas digitales. Cada barra representa una plataforma y la cantidad de minutos que, en promedio, las personas pasan en ella cada día. Observamos cómo ciertas plataformas, como Instagram y TikTok, pueden absorber una gran parte de nuestro tiempo, mientras que otras, como LinkedIn, tienen un impacto más limitado. Este análisis permite identificar cuáles son las plataformas que más contribuyen al uso excesivo y podrían estar influyendo negativamente en nuestra productividad y bienestar.
+""")
+
+
+
+
+### Reflexión final ###
+st.subheader("Conclusión")
+st.write("""
+Las redes sociales se han convertido en una parte fundamental de nuestra vida diaria, conectándonos con amigos, familiares y el mundo en general. Sin embargo, este análisis revela un impacto significativo en nuestra salud mental y productividad. Los datos muestran que plataformas como Instagram, TikTok y Facebook consumen gran parte de nuestro tiempo diario, lo que puede generar efectos secundarios como reducción en las horas de sueño, aumento de los niveles de estrés y menor productividad.
+
+Por un lado, el uso excesivo de redes sociales puede llevar a una dependencia que afecta nuestra capacidad para concentrarnos en tareas importantes, además de influir en nuestra percepción de la realidad al exponernos constantemente a estándares poco realistas de éxito, belleza o estilo de vida. Por otro lado, no todas las plataformas tienen el mismo impacto. Por ejemplo, redes como LinkedIn se perciben más funcionales en términos de productividad, mientras que otras se asocian más con el ocio.
+
+Este análisis también resalta que las horas frente a la pantalla están directamente relacionadas con las horas de sueño y, en algunos casos, con estados emocionales negativos. Los datos evidencian que debemos reflexionar sobre cómo usamos nuestro tiempo en línea y establecer límites saludables. Esto no significa eliminar las redes sociales, sino integrarlas de manera más consciente en nuestra rutina diaria.
+
+En última instancia, el cambio está en nuestras manos. Podemos optar por establecer horarios específicos para el uso de redes, priorizar plataformas que agreguen valor a nuestra vida y desconectarnos cuando sea necesario. Más allá de los números, este análisis nos invita a tomar decisiones que nos permitan disfrutar de una vida digital equilibrada y saludable. 
+""")
