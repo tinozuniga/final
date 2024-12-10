@@ -82,21 +82,19 @@ mental_health_filtered = mental_health_filtered.dropna(subset=["Stress_Level"])
 mental_health_filtered["Stress_Level"] = mental_health_filtered["Stress_Level"] / mental_health_filtered["Stress_Level"].max()
 
 # Bubble Chart: Relación entre horas de pantalla, sueño y estrés
-bubble_chart = px.scatter(
-    mental_health_filtered,
-    x="Screen_Time_Hours",
-    y="Sleep_Hours",
-    size="Stress_Level",
-    color="Mental_Health_Status",
-    hover_name="Mental_Health_Status",
-    title="Relación entre tiempo de pantalla, sueño y estrés"
-)
-st.plotly_chart(bubble_chart)
+    bubble_chart = px.scatter(
+        mental_health_filtered,
+        x="Screen_Time_Hours",  # Horas frente a la pantalla
+        y="Sleep_Hours",  # Horas de sueño
+        size="Stress_Level",  # El tamaño de las burbujas representa el estrés
+        color="Mental_Health_Status",  # Los colores indican el estado de salud mental
+        hover_name="Mental_Health_Status",  # Esto aparece al pasar el mouse por encima
+        title="Relación entre tiempo de pantalla, sueño y estrés"
+    )
+    st.plotly_chart(bubble_chart)
 
-    # Aquí va el primer gráfico: burbujas bonitas que nos dicen si pasar muchas horas pegados a la pantalla está haciendo que durmamos menos o que el estrés se nos vaya por las nubes.
-
+    # Segunda parte del análisis
     st.write("Ya, ahora veamos cómo cambian las horas de sueño según el estado de salud mental. ¿Qué crees que pasa?")
-
     
     # Bar Chart: Promedio de sueño por estado mental
     bar_chart = px.bar(
@@ -107,11 +105,9 @@ st.plotly_chart(bubble_chart)
         title="Horas promedio de sueño por estado de salud mental"
     )
     st.plotly_chart(bar_chart)
-    # Segundo gráfico: barras súper claras para comparar cuánto duerme la gente según cómo andan mentalmente. ¿Ansiedad? ¿Feliz? ¡Veamos qué nos dice el gráfico!
-    
+
 else:
     st.warning("Ups, no hay datos para el rango seleccionado. Prueba con otro rango, po. Quizás algo más amplio.")
-    # Mensaje de advertencia amigable para que el usuario no se pierda si no encuentra datos.
 
 
 
