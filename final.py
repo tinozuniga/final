@@ -38,13 +38,13 @@ time_wasters_df = pd.read_csv(time_wasters_file)  # Datos de "pérdida de tiempo
 # Aquí nos ponemos serios: limpiamos los datos para que todo funcione bien y evitemos errores.
 
 # Convertir columnas clave a numérico para evitar problemas
-for col in ['Age', 'Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level']:
+#for col in ['Age', 'Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level']:
     # Si estas columnas tienen texto o valores raros, los convertimos a números.
-    mental_health_df[col] = pd.to_numeric(mental_health_df[col], errors='coerce')
+  #  mental_health_df[col] = pd.to_numeric(mental_health_df[col], errors='coerce')
     # Si algún valor no se puede convertir a número, lo transformamos en NaN (valor nulo).
 
 # Limpiar filas con valores nulos
-mental_health_df = mental_health_df.dropna(subset=['Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level'])
+#mental_health_df = mental_health_df.dropna(subset=['Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level'])
 # Eliminamos las filas que tengan valores nulos en estas columnas esenciales.
 # Así nos aseguramos de que estamos trabajando con datos completos.
 
