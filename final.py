@@ -64,6 +64,11 @@ st.subheader("1. Explorando la relación entre salud mental y tecnología")
 # Rango de edad interactivo. Aquí usamos un slider para que los usuarios seleccionen el rango de edad que les interesa analizar.
 age_range = st.slider("Selecciona el rango de edad:", 18, 60, (18, 26))# El slider permite ajustar entre 18 y 60 años, con un rango inicial de 18 a 26 años como valor predeterminado.
 
+
+# Mapear los niveles de estrés a valores numéricos
+stress_mapping = {'Low': 1, 'Medium': 2, 'High': 3, 'Very High': 4}
+mental_health_filtered["Stress_Level"] = mental_health_filtered["Stress_Level"].map(stress_mapping)
+
 # Filtramos la base de datos según el rango de edad seleccionado en el slider.
 # Esto significa que solo vamos a analizar los datos de personas cuya edad esté dentro del rango elegido.
 mental_health_filtered = mental_health_df[
