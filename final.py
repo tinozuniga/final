@@ -3,11 +3,11 @@ import pandas as pd  # Pa manejar y analizar datos en forma de tablas (DataFrame
 import folium  # Pa crear mapas interactivos.
 import matplotlib.pyplot as plt  # Pa hacer gráficos básicos.
 import streamlit as st  # Pa crear aplicaciones web interactivas de datos.
-from wordcloud import WordCloud  # Para generar nubes de palabras chulas.
+from wordcloud import WordCloud  # Pa generar nubes de palabras.
 import plotly.express as px  # Pa hacer gráficos interactivos de nivel top.
 
 # Configurar Matplotlib para que funcione bien con Streamlit
-import matplotlib  # Una librería que ayuda con gráficos.
+import matplotlib  
 matplotlib.use("Agg")  # Esto asegura que los gráficos de Matplotlib no causen errores en Streamlit.
 
 # Título llamativo con contexto inicial
@@ -35,7 +35,7 @@ social_media_df = pd.read_csv(social_media_file)  # Datos de uso de redes social
 time_wasters_df = pd.read_csv(time_wasters_file)  # Datos de "pérdida de tiempo" en redes sociales.
 
 ### Limpieza de datos ###
-# Aquí nos ponemos serios: limpiamos los datos para que todo funcione bien y evitar errores.
+# Aquí nos ponemos serios: limpiamos los datos para que todo funcione bien y evitemos errores.
 
 # Convertir columnas clave a numérico para evitar problemas
 for col in ['Age', 'Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level']:
@@ -44,7 +44,7 @@ for col in ['Age', 'Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level']:
     # Si algún valor no se puede convertir a número, lo transformamos en NaN (valor nulo).
 
 # Limpiar filas con valores nulos
-mental_health_df = mental_health_df.dropna(subset=['Age', 'Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level'])
+mental_health_df = mental_health_df.dropna(subset=['Screen_Time_Hours', 'Sleep_Hours', 'Stress_Level'])
 # Eliminamos las filas que tengan valores nulos en estas columnas esenciales.
 # Así nos aseguramos de que estamos trabajando con datos completos.
 
