@@ -82,16 +82,16 @@ mental_health_filtered = mental_health_filtered.dropna(subset=["Stress_Level"])
 mental_health_filtered["Stress_Level"] = mental_health_filtered["Stress_Level"] / mental_health_filtered["Stress_Level"].max()
 
 # Bubble Chart: Relación entre horas de pantalla, sueño y estrés
-    bubble_chart = px.scatter(
-        mental_health_filtered,
-        x="Screen_Time_Hours",  # Horas frente a la pantalla
-        y="Sleep_Hours",  # Horas de sueño
-        size="Stress_Level",  # El tamaño de las burbujas representa el estrés
-        color="Mental_Health_Status",  # Los colores indican el estado de salud mental
-        hover_name="Mental_Health_Status",  # Esto aparece al pasar el mouse por encima
-        title="Relación entre tiempo de pantalla, sueño y estrés"
-    )
-    st.plotly_chart(bubble_chart)
+bubble_chart = px.scatter(
+    mental_health_filtered,
+    x="Screen_Time_Hours",  # Horas frente a la pantalla
+    y="Sleep_Hours",  # Horas de sueño
+    size="Stress_Level",  # El tamaño de las burbujas representa el estrés
+    color="Mental_Health_Status",  # Los colores indican el estado de salud mental
+    hover_name="Mental_Health_Status",  # Esto aparece al pasar el mouse por encima
+    title="Relación entre tiempo de pantalla, sueño y estrés"
+)
+st.plotly_chart(bubble_chart)
 
     # Segunda parte del análisis
     st.write("Ya, ahora veamos cómo cambian las horas de sueño según el estado de salud mental. ¿Qué crees que pasa?")
