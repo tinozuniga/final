@@ -188,7 +188,7 @@ platform_time = time_wasters_df.groupby("Platform")["Total Time Spent"].mean()
 
 # Crear gráfico de barras con bordes y diseño atractivo
 bar_chart = px.bar(
-    
+    platform_time,
     title="Tiempo promedio perdido por plataforma",
     labels={"value": "Tiempo Promedio (minutos)", "index": "Plataforma"},
     text=platform_time.round(2)  # Mostrar valores sobre las barras
@@ -204,7 +204,7 @@ bar_chart.update_traces(
 bar_chart.update_layout(
     xaxis_title="Plataforma",
     yaxis_title="Tiempo Promedio (minutos)",
-    title_x=0.5  # Centrar el título
+    
 )
 
 # Mostrar gráfico en Streamlit
