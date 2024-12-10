@@ -150,14 +150,25 @@ st.write("""
 
 # Sunburst Chart: Adicción según plataforma y tipo de dispositivo
 st.write("Exploremos la adicción según plataforma y dispositivo.")
+
+# Definir un mapa de colores específico
+color_map = {
+    "Bajo": "#6A0DAD",       # Morado
+    "Moderado": "#FFA500",   # Naranja
+    "Alto": "#FFFF00"        # Amarillo
+}
+
 sunburst_chart = px.sunburst(
     time_wasters_df,
     path=["Platform", "DeviceType"],
     values="Addiction Level",
     color="Addiction Level",
+    color_discrete_map=color_map,  # Asignar colores personalizados
     title="Adicción por plataforma y tipo de dispositivo"
 )
+
 st.plotly_chart(sunburst_chart)
+
 
 # Gráfico de barras: Tiempo promedio perdido por plataforma
 platform_time = time_wasters_df.groupby("Platform")["Total Time Spent"].mean()
