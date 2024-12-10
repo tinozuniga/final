@@ -203,3 +203,16 @@ Este análisis también resalta que las horas frente a la pantalla están direct
 
 En última instancia, el cambio está en nuestras manos. Podemos optar por establecer horarios específicos para el uso de redes, priorizar plataformas que agreguen valor a nuestra vida y desconectarnos cuando sea necesario. Más allá de los números, este análisis nos invita a tomar decisiones que nos permitan disfrutar de una vida digital equilibrada y saludable. 
 """)
+
+
+# Reflexión final
+st.subheader("Conclusión")
+st.write("""
+Las redes sociales nos conectan, pero también tienen un impacto profundo en nuestra salud mental y productividad.  
+Este análisis muestra datos para reflexionar: ¿cómo manejamos nuestro tiempo en línea?  
+El cambio está en tus manos.  
+""")
+
+# Añadir imagen al final
+st.image("foto.webp", caption="Una reflexión sobre nuestro tiempo en el mundo digital.", use_column_width=True)
+
