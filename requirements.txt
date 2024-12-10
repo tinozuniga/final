@@ -1,5 +1,6 @@
-pandas
 streamlit
+plotly
+pandas
 matplotlib
-folium
 wordcloud
+folium
