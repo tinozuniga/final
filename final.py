@@ -248,14 +248,7 @@ En última instancia, el cambio está en nuestras manos. Podemos optar por estab
 """)
 
 
-# Reflexión final
-st.subheader("Conclusión")
-st.write("""
-Las redes sociales nos conectan, pero también tienen un impacto profundo en nuestra salud mental y productividad.  
-Este análisis muestra datos para reflexionar: ¿cómo manejamos nuestro tiempo en línea?  
-El cambio está en tus manos.  
-""")
 
-# Añadir imagen al final
+# Añadimos imagen al final aplicando todo lo aprendido
 st.image("foto.webp", caption="Una reflexión sobre nuestro tiempo en el mundo digital.", use_column_width=True)
 
